@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PHASE3APPLR", "PHASE3APPLR.csproj", "{526684E0-6294-4A57-B1A5-692E1DE7D544}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{526684E0-6294-4A57-B1A5-692E1DE7D544}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{526684E0-6294-4A57-B1A5-692E1DE7D544}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{526684E0-6294-4A57-B1A5-692E1DE7D544}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{526684E0-6294-4A57-B1A5-692E1DE7D544}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BE039F32-6F64-496B-B9D0-A3578E7B28F2}
+	EndGlobalSection
+EndGlobal
