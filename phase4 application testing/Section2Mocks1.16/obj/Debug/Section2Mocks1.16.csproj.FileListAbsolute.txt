@@ -1,0 +1,6 @@
+C:\Shalni-Assignment\phase4 application testing\Section2Mocks1.16\bin\Debug\Section2Mocks1.16.dll
+C:\Shalni-Assignment\phase4 application testing\Section2Mocks1.16\bin\Debug\Section2Mocks1.16.pdb
+C:\Shalni-Assignment\phase4 application testing\Section2Mocks1.16\obj\Debug\Section2Mocks1.16.csproj.AssemblyReference.cache
+C:\Shalni-Assignment\phase4 application testing\Section2Mocks1.16\obj\Debug\Section2Mocks1.16.csproj.CoreCompileInputs.cache
+C:\Shalni-Assignment\phase4 application testing\Section2Mocks1.16\obj\Debug\Section2Mocks1.16.dll
+C:\Shalni-Assignment\phase4 application testing\Section2Mocks1.16\obj\Debug\Section2Mocks1.16.pdb
