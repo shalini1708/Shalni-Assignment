@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewBag.Title = "BlogTracker";
+}
+
+<html>
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center
+        }
+
+        .box-wrapper {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .left-column {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #box1 {
+            padding: 8px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            border: solid 1px green
+        }
+
+        #box2 {
+            padding: 8px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            border: solid 1px green
+        }
+
+        #box3 {
+            padding: 8px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            border: solid 1px green
+        }
+    </style>
+
+</head>
+
+<body>
+    <h2>List of Blogs</h2>
+    <div class="box-wrapper">
+        <div class="left-column">
+            <div id="box1">
+                <h4>ASP.NET-By shalu@gmail.com</h4>
+                <p>Date:10 Mar 2022</p>
+                <p>Subject:Ms.Net</p>
+                <p><a href="https://dotnet.microsoft.com/en-us/apps/aspnet">ASPDOTNET</a></p>
+            </div>
+            <div id="box2">
+                <h4>ASP.NET CORE-By shalu@gmail.com</h4>
+                <p>Date:17 Mar 2022</p>
+                <p>Subject:Ms.NetCore</p>
+                <p><a href="https://docs.microsoft.com/en-us/aspnet/core/">ASPDOTNET CORE</a></p>
+            </div>
+            <div id="box3">
+                <h4>ASP.NET CORE MVC-By shalu@gmail.com</h4>
+                <p>Date:23 Mar 2022</p>
+                <p>Subject:Ms.NetCoreMVC</p>
+                <p><a href="https://docs.microsoft.com/en-us/aspnet/core/mvc">ASPDOTNET CORE MVC</a></p>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
+

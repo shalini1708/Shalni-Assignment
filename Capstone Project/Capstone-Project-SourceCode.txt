@@ -1,0 +1,1242 @@
+Models:
+------------
+
+AdminInfo.cs:
+----------------------
+
+namespace CapstoneProject.Models
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    [Table("AdminInfo")]
+    public partial class AdminInfo
+    {
+        [Key]
+        [Column(Order = 0)]
+        [StringLength(50)]
+        public string EmailId { get; set; }
+
+        [Key]
+        [Column(Order = 1)]
+        [StringLength(20)]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+    }
+}
+
+BlogInfo.cs:
+------------------
+
+namespace CapstoneProject.Models
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    [Table("BlogInfo")]
+    public partial class BlogInfo
+    {
+        [Key]
+        public int BlogId { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string Title { get; set; }
+
+        [Required]
+        [StringLength(40)]
+        public string Subject { get; set; }
+
+        [Column(TypeName = "date")]
+        public DateTime DateOfCreation { get; set; }
+
+        [Required]
+        [StringLength(60)]
+        public string BlogUrl { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string EmpEmailId { get; set; }
+    }
+}
+
+EmpInfo.cs:
+-------------------
+
+namespace CapstoneProject.Models
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    [Table("EmpInfo")]
+    public partial class EmpInfo
+    {
+        [Key]
+        public int EmpId { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string EmailId { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string Name { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime DateOfJoining { get; set; }
+
+        [DataType(DataType.Password)]
+        public int PassCode { get; set; }
+    }
+}
+
+DBContext.cs:
+------------------------
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using System.Linq;
+
+namespace CapstoneProject.Models
+{
+    public partial class Model1 : DbContext
+    {
+        public Model1()
+            : base("name=shalinidbentities")
+        {
+        }
+
+        public virtual DbSet<BlogInfo> BlogInfoes { get; set; }
+        public virtual DbSet<EmpInfo> EmpInfoes { get; set; }
+        public virtual DbSet<AdminInfo> AdminInfoes { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BlogInfo>()
+                .Property(e => e.Title)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<BlogInfo>()
+                .Property(e => e.Subject)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<BlogInfo>()
+                .Property(e => e.BlogUrl)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<BlogInfo>()
+                .Property(e => e.EmpEmailId)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<EmpInfo>()
+                .Property(e => e.EmailId)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<EmpInfo>()
+                .Property(e => e.Name)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<AdminInfo>()
+                .Property(e => e.EmailId)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<AdminInfo>()
+                .Property(e => e.Password)
+                .IsUnicode(false);
+        }
+    }
+}
+
+Controllers:
+-------------------
+
+AdminController.cs:
+--------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using CapstoneProject.Models;
+
+namespace CapstoneProject.Controllers
+{
+    public class AdminController : Controller
+    {
+        private Model1 db = new Model1();
+
+        // GET: Admin
+       
+        public ActionResult EmployeeList()
+        {
+            return View(db.EmpInfoes.ToList());
+        }
+
+        // GET: Admin/Details/5
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            EmpInfo empInfo = db.EmpInfoes.Find(id);
+            if (empInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(empInfo);
+        }
+
+        // GET: Admin/Create
+        public ActionResult SaveEmployee()
+        {
+            return View();
+        }
+
+        // POST: Admin/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveEmployee([Bind(Include = "EmpId,EmailId,Name,DateOfJoining,PassCode")] EmpInfo empInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                db.EmpInfoes.Add(empInfo);
+                db.SaveChanges();
+                return RedirectToAction("EmployeeList");
+            }
+
+            return View(empInfo);
+        }
+
+        // GET: Admin/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            EmpInfo empInfo = db.EmpInfoes.Find(id);
+            if (empInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(empInfo);
+        }
+
+        // POST: Admin/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "EmpId,EmailId,Name,DateOfJoining,PassCode")] EmpInfo empInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(empInfo).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("EmployeeList");
+            }
+            return View(empInfo);
+        }
+
+        // GET: Admin/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            EmpInfo empInfo = db.EmpInfoes.Find(id);
+            if (empInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(empInfo);
+        }
+
+        // POST: Admin/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            EmpInfo empInfo = db.EmpInfoes.Find(id);
+            db.EmpInfoes.Remove(empInfo);
+            db.SaveChanges();
+            return RedirectToAction("EmployeeList");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}
+
+EmployeeController.cs:
+-------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using CapstoneProject.Models;
+
+namespace CapstoneProject.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        private Model1 db = new Model1();
+
+        // GET: Employee
+        public ActionResult BlogList()
+        {
+            return View(db.BlogInfoes.ToList());
+        }
+
+        // GET: Employee/Details/5
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            BlogInfo blogInfo = db.BlogInfoes.Find(id);
+            if (blogInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(blogInfo);
+        }
+
+        // GET: Employee/Create
+        public ActionResult SaveBlog()
+        {
+            return View();
+        }
+
+        // POST: Employee/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveBlog([Bind(Include = "BlogId,Title,Subject,DateOfCreation,BlogUrl,EmpEmailId")] BlogInfo blogInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                db.BlogInfoes.Add(blogInfo);
+                db.SaveChanges();
+                return RedirectToAction("BlogList");
+            }
+
+            return View(blogInfo);
+        }
+
+        // GET: Employee/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            BlogInfo blogInfo = db.BlogInfoes.Find(id);
+            if (blogInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(blogInfo);
+        }
+
+        // POST: Employee/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "BlogId,Title,Subject,DateOfCreation,BlogUrl,EmpEmailId")] BlogInfo blogInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(blogInfo).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("BlogList");
+            }
+            return View(blogInfo);
+        }
+
+        // GET: Employee/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            BlogInfo blogInfo = db.BlogInfoes.Find(id);
+            if (blogInfo == null)
+            {
+                return HttpNotFound();
+            }
+            return View(blogInfo);
+        }
+
+        // POST: Employee/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            BlogInfo blogInfo = db.BlogInfoes.Find(id);
+            db.BlogInfoes.Remove(blogInfo);
+            db.SaveChanges();
+            return RedirectToAction("BlogList");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}
+
+HomeController.cs:
+-------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using CapstoneProject.Models;
+
+namespace CapstoneProject.Controllers
+{
+    public class HomeController : Controller
+    {
+        private Model1 db = new Model1();
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            ViewBag.Message = "Your application description page.";
+
+            return View();
+        }
+
+        public ActionResult Contact()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+        public ActionResult AdminLogin()
+        {
+            return View();
+        }
+        [HttpPost]
+
+        public ActionResult AdminLogin(EmpInfo empInfo)
+        {
+            return RedirectToAction("EmployeeList", "Admin");
+        }
+        public ActionResult EmployeeLogin()
+        {
+            return View();
+        }
+        [HttpPost]
+
+        public ActionResult EmployeeLogin(BlogInfo blogInfo)
+        {
+            return RedirectToAction("BlogList", "Employee");
+        }
+
+        public ActionResult BlogTracker(BlogInfo blogInfo)
+        {
+            return View();
+        }
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            return RedirectToAction("AdminLogin", "Home");
+        }
+
+    }
+}
+
+Views:
+----------
+Admin:
+-----------
+EmployeeList.cshtml:
+---------------------------------
+@model IEnumerable<CapstoneProject.Models.EmpInfo>
+
+@{
+    ViewBag.Title = "EmployeeList";
+}
+
+<h2>Employee List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "SaveEmployee")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.EmailId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateOfJoining)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PassCode)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmailId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateOfJoining)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PassCode)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.EmpId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.EmpId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.EmpId })
+        </td>
+    </tr>
+}
+
+</table>
+
+SaveEmployee.cshtml:
+----------------------------------
+@model CapstoneProject.Models.EmpInfo
+
+@{
+    ViewBag.Title = "SaveEmployee";
+}
+
+<h2>Save Employee</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfJoining, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateOfJoining, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DateOfJoining, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PassCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PassCode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PassCode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Add Employee" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "EmployeeList")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+Edit.cshtml:
+-------------------
+@model CapstoneProject.Models.EmpInfo
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>EmpInfo</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.EmpId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfJoining, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateOfJoining, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DateOfJoining, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PassCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PassCode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PassCode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+Details.cshtml:
+-----------------------
+@model CapstoneProject.Models.EmpInfo
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>EmpInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.EmailId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EmailId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DateOfJoining)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateOfJoining)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PassCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PassCode)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.EmpId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+Delete.cshtml:
+------------------------
+@model CapstoneProject.Models.EmpInfo
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>EmpInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.EmailId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EmailId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DateOfJoining)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateOfJoining)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PassCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PassCode)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
+
+Employee:
+----------------
+BlogList.cshtml:
+-------------------------
+@model IEnumerable<CapstoneProject.Models.BlogInfo>
+
+@{
+    ViewBag.Title = "BlogList";
+}
+
+<h2>Blog List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "SaveBlog")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Subject)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateOfCreation)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BlogUrl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmpEmailId)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Subject)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateOfCreation)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BlogUrl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmpEmailId)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.BlogId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.BlogId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.BlogId })
+        </td>
+    </tr>
+}
+
+</table>
+
+SaveBlog.cshtml:
+----------------------------
+@model CapstoneProject.Models.BlogInfo
+
+@{
+    ViewBag.Title = "SaveBlog";
+}
+
+<h2>Add Blog Details</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfCreation, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateOfCreation, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DateOfCreation, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BlogUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BlogUrl, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BlogUrl, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmpEmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmpEmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmpEmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save Blog" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+Edit.cshtml:
+-------------------
+@model CapstoneProject.Models.BlogInfo
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>BlogInfo</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.BlogId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfCreation, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateOfCreation, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DateOfCreation, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BlogUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BlogUrl, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BlogUrl, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmpEmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmpEmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmpEmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+Details.cshtml:
+------------------------
+@model CapstoneProject.Models.BlogInfo
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>BlogInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DateOfCreation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateOfCreation)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogUrl)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BlogUrl)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EmpEmailId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EmpEmailId)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.BlogId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+Delete.cshtml:
+-----------------------
+@model CapstoneProject.Models.BlogInfo
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>BlogInfo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Subject)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subject)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DateOfCreation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateOfCreation)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogUrl)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BlogUrl)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EmpEmailId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EmpEmailId)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
+
+Home:
+------------
+AdminLogin.cshtml:
+-------------------------------
+@model CapstoneProject.Models.AdminInfo
+
+@{
+    ViewBag.Title = "AdminLogin";
+}
+
+<h2>AdminLogin</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+  
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Login" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+EmployeeLogin.cshtml:
+------------------------------------
+@model CapstoneProject.Models.EmpInfo
+
+@{
+    ViewBag.Title = "EmployeeLogin";
+}
+
+<h2>Employee Login</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+ 
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PassCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PassCode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PassCode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Login" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
